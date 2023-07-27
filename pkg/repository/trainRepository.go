@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"context"
+
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowTrain-svc/pkg/repository/interface"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,9 +12,10 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
-// AddTrain implements interfaces.TrainRepo.
-func (*TrainDataBase) AddTrain(train domain.Train) error {
-	panic("unimplemented")
+func (db *TrainDataBase) AddTrain(train domain.Train) error {
+	collection := db.DB.Collection("station")
+	_, err := collection.InsertOne(context.Background(), train)
+	return err
 }
 
 // AddTrain implements interfaces.TrainRepo.
