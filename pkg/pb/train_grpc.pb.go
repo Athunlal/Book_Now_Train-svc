@@ -31,7 +31,7 @@ func NewTrainManagementClient(cc grpc.ClientConnInterface) TrainManagementClient
 
 func (c *trainManagementClient) AddTrain(ctx context.Context, in *AddTrainRequest, opts ...grpc.CallOption) (*AddTrainResponse, error) {
 	out := new(AddTrainResponse)
-	err := c.cc.Invoke(ctx, "/profile.TrainManagement/AddTrain", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Train.TrainManagement/AddTrain", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func _TrainManagement_AddTrain_Handler(srv interface{}, ctx context.Context, dec
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/profile.TrainManagement/AddTrain",
+		FullMethod: "/Train.TrainManagement/AddTrain",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TrainManagementServer).AddTrain(ctx, req.(*AddTrainRequest))
@@ -88,7 +88,7 @@ func _TrainManagement_AddTrain_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var TrainManagement_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "profile.TrainManagement",
+	ServiceName: "Train.TrainManagement",
 	HandlerType: (*TrainManagementServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

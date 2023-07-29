@@ -22,12 +22,11 @@ func NewTrainHandler(usecase interfaces.TrainUseCase) *TrainHandler {
 
 func (h *TrainHandler) AddTrain(ctx context.Context, req *pb.AddTrainRequest) (*pb.AddTrainResponse, error) {
 	train := domain.Train{
-		TrainId:     uint(req.Trainid),
 		TrainName:   req.Trainname,
 		TrainNumber: uint(req.Trainnumber),
 	}
 
-	err := h.useCase.AddTrain(train)
+	err := h.useCase.AddTrain(ctx, train)
 	if err != nil {
 		return &pb.AddTrainResponse{
 			Status: http.StatusUnprocessableEntity,

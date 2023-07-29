@@ -3,8 +3,7 @@ package domain
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Train struct {
-	TrainId     uint   `json:"trainid" bson:"trainid,omitempty"`
-	TrainNumber uint   `json:"trainumber" bson:"trainumber,omitempty" validate:"required,min=4,max=50"`
+	TrainNumber uint   `json:"trainumber" bson:"trainumber,omitempty"`
 	TrainName   string `json:"trainname" bson:"trainname,omitempty" validate:"required,min=2,max=50"`
 	Route       []uint `json:"route,omitempty" bson:"route,omitempty"`
 }

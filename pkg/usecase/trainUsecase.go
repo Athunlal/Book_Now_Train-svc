@@ -1,6 +1,9 @@
 package usecase
 
 import (
+	"context"
+	"errors"
+
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowTrain-svc/pkg/repository/interface"
 	usecase "github.com/athunlal/bookNowTrain-svc/pkg/usecase/interface"
@@ -10,8 +13,18 @@ type TrainUseCase struct {
 	Repo interfaces.TrainRepo
 }
 
-func (use *TrainUseCase) AddTrain(trainData domain.Train) error {
-	err := use.Repo.AddTrain(trainData)
+// AddTrain implements interfaces.TrainUseCase.
+func (use *TrainUseCase) AddTrain(ctx context.Context, train domain.Train) error {
+	_, err := use.Repo.FindByTrainNumber(ctx, train)
+	if err == nil {
+		return errors.New("Train number is already exist")
+	}
+	_, err = use.Repo.FindbyTrainName(ctx, train)
+	if err == nil {
+		return errors.New("Train name is already exist")
+	}
+	err = use.Repo.AddTrain(ctx, train)
+
 	return err
 }
 

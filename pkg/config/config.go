@@ -1,20 +1,22 @@
 package config
 
 import (
+	"log"
+
 	"github.com/go-playground/validator"
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
 type Config struct {
+	DBPort     string `mapstructure:"DBPort"`
 	DBHost     string `mapstructure:"DBHOST"`
 	DBName     string `mapstructure:"DBNAME"`
-	DBUser     string `mapstructure:"DBUSER"`
-	DBPort     string `mapstructure:"DBPORT"`
 	DBPassword string `mapstructure:"DBPASSWORD"`
 }
 
 var envs = []string{
-	"DBHOST", "DBNAME", "DBUSER", "DBPORT", "DBPASSWORD",
+	"DBNAME", "DBPASSWORD",
 }
 
 func LoadConfig() (Config, error) {
@@ -28,14 +30,21 @@ func LoadConfig() (Config, error) {
 			return cfg, err
 		}
 	}
-
 	if err := viper.Unmarshal(&cfg); err != nil {
 		return cfg, err
 	}
-
 	if err := validator.New().Struct(&cfg); err != nil {
 		return cfg, err
 	}
 
+	LoadEnv()
+
 	return cfg, nil
+}
+func LoadEnv() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading Env File")
+	}
+
 }

@@ -1,7 +1,11 @@
 package interfaces
 
-import "github.com/athunlal/bookNowTrain-svc/pkg/domain"
+import (
+	"context"
+
+	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
+)
 
 type TrainUseCase interface {
-	AddTrain(train domain.Train) error
+	AddTrain(ctx context.Context, train domain.Train) error
 }
