@@ -6,6 +6,18 @@ option go_package = "./pkg/pb";
 
 service TrainManagement{
     rpc AddTrain(AddTrainRequest) returns (AddTrainResponse) {}
+    rpc AddStation(AddStationRequest)returns(AddStationResponse){}
+
+}
+
+message AddStationRequest{
+    int64 stationid =1;
+    string stationname=2;
+}
+
+message AddStationResponse{
+    int64 status = 1;
+    string error = 2;
 }
 
 message AddTrainRequest{

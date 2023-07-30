@@ -13,6 +13,21 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// AddStation implements interfaces.TrainRepo.
+func (*TrainDataBase) AddStation(ctx context.Context, station domain.Station) error {
+	panic("unimplemented")
+}
+
+// FindByStationName implements interfaces.TrainRepo.
+func (*TrainDataBase) FindByStationName(ctx context.Context, station domain.Station) (domain.Station, error) {
+	panic("unimplemented")
+}
+
+// FindByStationid implements interfaces.TrainRepo.
+func (*TrainDataBase) FindByStationid(ctx context.Context, station domain.Station) (domain.Station, error) {
+	panic("unimplemented")
+}
+
 // FindbyTrainName implements interfaces.TrainRepo.
 func (db *TrainDataBase) FindbyTrainName(ctx context.Context, train domain.Train) (domain.Train, error) {
 	filter := bson.M{"trainname": train.TrainName}
@@ -38,11 +53,6 @@ func (db *TrainDataBase) FindByTrainNumber(tx context.Context, train domain.Trai
 
 	return result, err
 
-}
-
-// FindByTrainid implements interfaces.TrainRepo.
-func (*TrainDataBase) FindByTrainid(tx context.Context, train domain.Train) (domain.Train, error) {
-	panic("unimplemented")
 }
 
 // AddTrain implements interfaces.TrainRepo.

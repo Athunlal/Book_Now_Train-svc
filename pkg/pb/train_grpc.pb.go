@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TrainManagementClient interface {
 	AddTrain(ctx context.Context, in *AddTrainRequest, opts ...grpc.CallOption) (*AddTrainResponse, error)
+	AddStation(ctx context.Context, in *AddStationRequest, opts ...grpc.CallOption) (*AddStationResponse, error)
 }
 
 type trainManagementClient struct {
@@ -38,11 +39,21 @@ func (c *trainManagementClient) AddTrain(ctx context.Context, in *AddTrainReques
 	return out, nil
 }
 
+func (c *trainManagementClient) AddStation(ctx context.Context, in *AddStationRequest, opts ...grpc.CallOption) (*AddStationResponse, error) {
+	out := new(AddStationResponse)
+	err := c.cc.Invoke(ctx, "/Train.TrainManagement/AddStation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TrainManagementServer is the server API for TrainManagement service.
 // All implementations must embed UnimplementedTrainManagementServer
 // for forward compatibility
 type TrainManagementServer interface {
 	AddTrain(context.Context, *AddTrainRequest) (*AddTrainResponse, error)
+	AddStation(context.Context, *AddStationRequest) (*AddStationResponse, error)
 	mustEmbedUnimplementedTrainManagementServer()
 }
 
@@ -52,6 +63,9 @@ type UnimplementedTrainManagementServer struct {
 
 func (UnimplementedTrainManagementServer) AddTrain(context.Context, *AddTrainRequest) (*AddTrainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddTrain not implemented")
+}
+func (UnimplementedTrainManagementServer) AddStation(context.Context, *AddStationRequest) (*AddStationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddStation not implemented")
 }
 func (UnimplementedTrainManagementServer) mustEmbedUnimplementedTrainManagementServer() {}
 
@@ -84,6 +98,24 @@ func _TrainManagement_AddTrain_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TrainManagement_AddStation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddStationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrainManagementServer).AddStation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Train.TrainManagement/AddStation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrainManagementServer).AddStation(ctx, req.(*AddStationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TrainManagement_ServiceDesc is the grpc.ServiceDesc for TrainManagement service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -94,6 +126,10 @@ var TrainManagement_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddTrain",
 			Handler:    _TrainManagement_AddTrain_Handler,
+		},
+		{
+			MethodName: "AddStation",
+			Handler:    _TrainManagement_AddStation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
