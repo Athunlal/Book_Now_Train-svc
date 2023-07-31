@@ -13,6 +13,21 @@ type TrainUseCase struct {
 	Repo interfaces.TrainRepo
 }
 
+// AddStation implements interfaces.TrainUseCase.
+func (use *TrainUseCase) AddStation(ctx context.Context, station domain.Station) error {
+	_, err := use.Repo.FindByStationName(ctx, station)
+	if err == nil {
+		return errors.New("Station name is already exist")
+	}
+	_, err = use.Repo.FindByStationid(ctx, station)
+	if err == nil {
+		return errors.New("Station id  is already exist")
+	}
+	err = use.Repo.AddStation(ctx, station)
+
+	return err
+}
+
 // AddTrain implements interfaces.TrainUseCase.
 func (use *TrainUseCase) AddTrain(ctx context.Context, train domain.Train) error {
 	_, err := use.Repo.FindByTrainNumber(ctx, train)

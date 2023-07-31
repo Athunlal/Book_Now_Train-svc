@@ -8,4 +8,5 @@ import (
 
 type TrainUseCase interface {
 	AddTrain(ctx context.Context, train domain.Train) error
+	AddStation(ctx context.Context, station domain.Station) error
 }

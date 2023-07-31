@@ -14,18 +14,26 @@ type TrainDataBase struct {
 }
 
 // AddStation implements interfaces.TrainRepo.
-func (*TrainDataBase) AddStation(ctx context.Context, station domain.Station) error {
-	panic("unimplemented")
+func (db *TrainDataBase) AddStation(ctx context.Context, station domain.Station) error {
+	collection := db.DB.Collection("station")
+	_, err := collection.InsertOne(ctx, station)
+	return err
 }
 
 // FindByStationName implements interfaces.TrainRepo.
-func (*TrainDataBase) FindByStationName(ctx context.Context, station domain.Station) (domain.Station, error) {
-	panic("unimplemented")
+func (db *TrainDataBase) FindByStationName(ctx context.Context, station domain.Station) (domain.Station, error) {
+	filter := bson.M{"stationname": station.StationName}
+	var result domain.Station
+	err := db.DB.Collection("station").FindOne(ctx, filter).Decode(&result)
+	return result, err
 }
 
 // FindByStationid implements interfaces.TrainRepo.
-func (*TrainDataBase) FindByStationid(ctx context.Context, station domain.Station) (domain.Station, error) {
-	panic("unimplemented")
+func (db *TrainDataBase) FindByStationid(ctx context.Context, station domain.Station) (domain.Station, error) {
+	filter := bson.M{"_id": station.StationId}
+	var result domain.Station
+	err := db.DB.Collection("train").FindOne(ctx, filter).Decode(&result)
+	return result, err
 }
 
 // FindbyTrainName implements interfaces.TrainRepo.
