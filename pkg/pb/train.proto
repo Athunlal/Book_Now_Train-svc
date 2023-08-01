@@ -1,31 +1,70 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 package Train;
 
 option go_package = "./pkg/pb";
 
-service TrainManagement{
+service TrainManagement {
     rpc AddTrain(AddTrainRequest) returns (AddTrainResponse) {}
-    rpc AddStation(AddStationRequest)returns(AddStationResponse){}
-
+    rpc AddStation(AddStationRequest) returns (AddStationResponse) {}
+    rpc AddRoute(AddRouteRequest) returns (AddRouteResponse) {}
+    rpc UpdateTrainRoute(UpdateTrainRouteRequest) returns (UpdateTrainRouteResponse) {}
 }
 
-message AddStationRequest{
-    int64 stationid =1;
-    string stationname=2;
+// Add route
+message RouteStation {
+    int64 stationid = 1;
+    float distance = 2;
+    google.protobuf.Timestamp time = 3;
 }
 
-message AddStationResponse{
+message Route {
+    int64 routeid = 1;
+    repeated RouteStation routemap = 2;
+}
+
+message AddRouteRequest {
+    int64 routeid = 1;
+    repeated RouteStation station = 2;
+}
+
+message AddRouteResponse {
     int64 status = 1;
     string error = 2;
 }
 
-message AddTrainRequest{
-    int64 trainnumber =1;
+// Add station
+message AddStationRequest {
+    int64 stationid = 1;
+    string stationname = 2;
+    string city = 3;
+}
+
+message AddStationResponse {
+    int64 status = 1;
+    string error = 2;
+}
+
+// Add train
+message AddTrainRequest {
+    int64 trainnumber = 1;
     string trainname = 2;
 }
 
-message AddTrainResponse{
+message AddTrainResponse {
+    int64 status = 1;
+    string error = 2;
+}
+
+// Update route
+message UpdateTrainRouteRequest {
+    int64 trainnumber = 1;
+    Route route = 2;
+}
+
+message UpdateTrainRouteResponse {
     int64 status = 1;
     string error = 2;
 }

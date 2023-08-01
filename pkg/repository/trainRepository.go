@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowTrain-svc/pkg/repository/interface"
@@ -11,6 +12,14 @@ import (
 
 type TrainDataBase struct {
 	DB *mongo.Database
+}
+
+// AddRoute implements interfaces.TrainRepo.
+func (db *TrainDataBase) AddRoute(ctx context.Context, route domain.Route) error {
+	fmt.Println(route)
+	collection := db.DB.Collection("route")
+	_, err := collection.InsertOne(ctx, route)
+	return err
 }
 
 // AddStation implements interfaces.TrainRepo.
