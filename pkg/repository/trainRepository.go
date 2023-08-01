@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowTrain-svc/pkg/repository/interface"
@@ -15,12 +14,6 @@ type TrainDataBase struct {
 }
 
 // AddRoute implements interfaces.TrainRepo.
-func (db *TrainDataBase) AddRoute(ctx context.Context, route domain.Route) error {
-	fmt.Println(route)
-	collection := db.DB.Collection("route")
-	_, err := collection.InsertOne(ctx, route)
-	return err
-}
 
 // AddStation implements interfaces.TrainRepo.
 func (db *TrainDataBase) AddStation(ctx context.Context, station domain.Station) error {
@@ -34,14 +27,6 @@ func (db *TrainDataBase) FindByStationName(ctx context.Context, station domain.S
 	filter := bson.M{"stationname": station.StationName}
 	var result domain.Station
 	err := db.DB.Collection("station").FindOne(ctx, filter).Decode(&result)
-	return result, err
-}
-
-// FindByStationid implements interfaces.TrainRepo.
-func (db *TrainDataBase) FindByStationid(ctx context.Context, station domain.Station) (domain.Station, error) {
-	filter := bson.M{"_id": station.StationId}
-	var result domain.Station
-	err := db.DB.Collection("train").FindOne(ctx, filter).Decode(&result)
 	return result, err
 }
 

@@ -6,12 +6,11 @@ import (
 )
 
 type Train struct {
-	TrainNumber uint   `json:"trainumber" bson:"trainumber,omitempty"`
-	TrainName   string `json:"trainname" bson:"trainname,omitempty" validate:"required,min=2,max=50"`
-	Route       []uint `json:"route,omitempty" bson:"route,omitempty"`
+	TrainNumber uint               `json:"trainNumber" bson:"trainNumber,omitempty"`
+	TrainName   string             `json:"trainName" bson:"trainName,omitempty" validate:"required,min=2,max=50"`
+	Route       primitive.ObjectID `json:"route,omitempty" bson:"route,omitempty"`
 }
 type Station struct {
-	StationId   uint   `json:"stationid" bson:"_id,omitempty"`
 	StationName string `json:"stationname" bson:"stationname,omitempty"`
 	City        string `json:"city" bson:"city,omitempty"`
 	StationType string `json:"stationtype" bson:"stationtype,omitempty"`

@@ -3,13 +3,10 @@ package handler
 import (
 	"context"
 	"net/http"
-	"time"
 
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
 	"github.com/athunlal/bookNowTrain-svc/pkg/pb"
 	interfaces "github.com/athunlal/bookNowTrain-svc/pkg/usecase/interface"
-	"github.com/golang/protobuf/ptypes/timestamp"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type TrainHandler struct {
@@ -22,44 +19,14 @@ func NewTrainHandler(usecase interfaces.TrainUseCase) *TrainHandler {
 		useCase: usecase,
 	}
 }
-func (h *TrainHandler) AddRoute(ctx context.Context, req *pb.AddRouteRequest) (*pb.AddRouteResponse, error) {
-	routeData := domain.Route{}
-	for _, rs := range req.Station {
-		stationID := primitive.NewObjectIDFromTimestamp(time.Unix(rs.Time.Seconds, int64(rs.Time.Nanos)))
-		distance := float64(rs.Distance)
-
-		// Convert to a time.Time value
-
-		routeData.RouteMap = append(routeData.RouteMap, domain.RouteStation{
-			StationId: stationID,
-			Distance:  distance,
-			Time: &timestamp.Timestamp{
-				Seconds: rs.Time.Seconds,
-				Nanos:   int32(rs.Time.Nanos),
-			},
-		})
-	}
-	err := h.useCase.AddRoute(ctx, routeData)
-	if err != nil {
-		return &pb.AddRouteResponse{
-			Status: http.StatusUnprocessableEntity,
-			Error:  "Error Found in usecase",
-		}, err
-	}
-
-	return &pb.AddRouteResponse{
-		Status: http.StatusOK,
-	}, nil
-}
 
 func (h *TrainHandler) AddStation(ctx context.Context, req *pb.AddStationRequest) (*pb.AddStationResponse, error) {
 	station := domain.Station{
-		StationId:   uint(req.Stationid),
 		StationName: req.Stationname,
 		City:        req.City,
 	}
 
-	err := h.useCase.AddStation(ctx, station)
+	_, err := h.useCase.AddStation(ctx, station)
 	if err != nil {
 		return &pb.AddStationResponse{
 			Status: http.StatusUnprocessableEntity,
