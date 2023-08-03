@@ -1,17 +1,18 @@
 syntax = "proto3";
 
-
-
 package Train;
+
+import "google/protobuf/timestamp.proto";
 
 option go_package = "./pkg/pb";
 
 service TrainManagement {
     rpc AddTrain(AddTrainRequest) returns (AddTrainResponse) {}
     rpc AddStation(AddStationRequest) returns (AddStationResponse) {}
+    rpc AddRoute(AddRouteRequest) returns (AddRouteResponse) {}
 }
 
-// Add station
+//Add station 
 message AddStationRequest {
     string stationname = 1;
     string city = 2;
@@ -22,7 +23,7 @@ message AddStationResponse {
     string error = 2;
 }
 
-// Add train
+//Add train 
 message AddTrainRequest {
     int64 trainnumber = 1;
     string trainname = 2;
@@ -33,3 +34,25 @@ message AddTrainResponse {
     string error = 2;
 }
 
+// Add route
+message RouteStation {
+     string stationid = 1;
+    float distance = 2;
+    google.protobuf.Timestamp time = 3;
+   
+}   
+
+message Route {
+     string routeid = 1;
+    string routename = 2;
+    repeated RouteStation routemap = 3;
+}
+
+message AddRouteRequest {
+    Route route = 1;
+}
+
+message AddRouteResponse {
+    int64 status = 1;
+    string error = 2;
+}

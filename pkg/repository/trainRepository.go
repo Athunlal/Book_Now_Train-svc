@@ -13,6 +13,21 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// FindroutebyName implements interfaces.TrainRepo.
+func (db *TrainDataBase) FindroutebyName(ctx context.Context, route domain.Route) (domain.Route, error) {
+	filter := bson.M{"": route.RouteName}
+	var result domain.Route
+	err := db.DB.Collection("routename").FindOne(ctx, filter).Decode(&result)
+	return result, err
+}
+
+// AddRoute implements interfaces.TrainRepo.
+func (db *TrainDataBase) AddRoute(ctx context.Context, route domain.Route) error {
+	collection := db.DB.Collection("route")
+	_, err := collection.InsertOne(context.Background(), route)
+	return err
+}
+
 // AddRoute implements interfaces.TrainRepo.
 
 // AddStation implements interfaces.TrainRepo.
