@@ -15,4 +15,6 @@ type TrainRepo interface {
 	AddStation(ctx context.Context, station domain.Station) error
 	FindroutebyName(ctx context.Context, route domain.Route) (domain.Route, error)
 	AddRoute(ctx context.Context, route domain.Route) error
+
+	UpdateTrainRoute(ctx context.Context, trainData domain.Train) error
 }

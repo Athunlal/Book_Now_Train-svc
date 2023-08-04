@@ -22,6 +22,30 @@ func NewTrainHandler(usecase interfaces.TrainUseCase) *TrainHandler {
 	}
 }
 
+func (h *TrainHandler) UpdateTrainRoute(ctx context.Context, req *pb.UpdateRequest) (*pb.UpdateResponse, error) {
+	routeid, err := primitive.ObjectIDFromHex(req.Route)
+	if err != nil {
+		log.Fatal("Converting the string to primitive.ObjectId err", err)
+	}
+
+	trainData := domain.Train{
+		Route:       routeid,
+		TrainNumber: uint(req.Trainnumber),
+	}
+
+	err = h.useCase.UpdateTrainRoute(ctx, trainData)
+	if err != nil {
+		return &pb.UpdateResponse{
+			Status: http.StatusUnprocessableEntity,
+			Error:  "Error Found in usecase",
+		}, err
+	}
+
+	return &pb.UpdateResponse{
+		Status: http.StatusOK,
+	}, nil
+}
+
 func (h *TrainHandler) AddRoute(ctx context.Context, req *pb.AddRouteRequest) (*pb.AddRouteResponse, error) {
 
 	routeid, err := primitive.ObjectIDFromHex(req.Route.Routeid)
@@ -48,13 +72,16 @@ func (h *TrainHandler) AddRoute(ctx context.Context, req *pb.AddRouteRequest) (*
 	}
 
 	err = h.useCase.AddRoute(ctx, routeData)
-
-	response := &pb.AddRouteResponse{
-		// Set the appropriate fields based on the processing result.
-		// For example, you can set status and error fields if needed.
+	if err != nil {
+		return &pb.AddRouteResponse{
+			Status: http.StatusUnprocessableEntity,
+			Error:  "Error Found in usecase",
+		}, err
 	}
 
-	return response, nil
+	return &pb.AddRouteResponse{
+		Status: http.StatusOK,
+	}, nil
 
 }
 
@@ -81,6 +108,7 @@ func (h *TrainHandler) AddTrain(ctx context.Context, req *pb.AddTrainRequest) (*
 	train := domain.Train{
 		TrainName:   req.Trainname,
 		TrainNumber: uint(req.Trainnumber),
+		TrainType:   req.Traintype,
 	}
 
 	err := h.useCase.AddTrain(ctx, train)

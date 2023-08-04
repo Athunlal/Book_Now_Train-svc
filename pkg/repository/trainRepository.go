@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowTrain-svc/pkg/repository/interface"
@@ -13,11 +14,23 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// UpdateTrainRoute implements interfaces.TrainRepo.
+func (db *TrainDataBase) UpdateTrainRoute(ctx context.Context, trainData domain.Train) error {
+	collection := db.DB.Collection("train")
+	filter := bson.M{"trainNumber": trainData.TrainNumber}
+	update := bson.M{"$set": bson.M{"route": trainData.Route}}
+	_, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		fmt.Printf("Error updating train: %v\n", err)
+	}
+	return err
+}
+
 // FindroutebyName implements interfaces.TrainRepo.
 func (db *TrainDataBase) FindroutebyName(ctx context.Context, route domain.Route) (domain.Route, error) {
-	filter := bson.M{"": route.RouteName}
+	filter := bson.M{"routename": route.RouteName}
 	var result domain.Route
-	err := db.DB.Collection("routename").FindOne(ctx, filter).Decode(&result)
+	err := db.DB.Collection("route").FindOne(ctx, filter).Decode(&result)
 	return result, err
 }
 

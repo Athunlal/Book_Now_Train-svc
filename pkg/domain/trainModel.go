@@ -9,6 +9,7 @@ type Train struct {
 	TrainNumber uint               `json:"trainNumber" bson:"trainNumber,omitempty"`
 	TrainName   string             `json:"trainName" bson:"trainName,omitempty" validate:"required,min=2,max=50"`
 	Route       primitive.ObjectID `json:"route,omitempty" bson:"route,omitempty"`
+	TrainType   string             `json:"traintype" bson:"traintype,omitempty"`
 }
 type Station struct {
 	StationName string `json:"stationname" bson:"stationname,omitempty"`

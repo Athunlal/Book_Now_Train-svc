@@ -13,6 +13,12 @@ type TrainUseCase struct {
 	Repo interfaces.TrainRepo
 }
 
+// UpdateTrainRoute implements interfaces.TrainUseCase.
+func (use *TrainUseCase) UpdateTrainRoute(ctx context.Context, trainData domain.Train) error {
+	err := use.Repo.UpdateTrainRoute(ctx, trainData)
+	return err
+}
+
 // AddRoute implements interfaces.TrainUseCase.
 func (use *TrainUseCase) AddRoute(ctx context.Context, route domain.Route) error {
 	result, err := use.Repo.FindroutebyName(ctx, route)
