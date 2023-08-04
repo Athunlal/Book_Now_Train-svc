@@ -11,6 +11,7 @@ service TrainManagement {
     rpc AddStation(AddStationRequest) returns (AddStationResponse) {}
     rpc AddRoute(AddRouteRequest) returns (AddRouteResponse) {}
     rpc UpdateTrainRoute(UpdateRequest)returns(UpdateResponse){}
+    rpc SearchTrain(SearchTrainRequest) returns (SearchTrainResponse) {}    
 }
 
 //Add station 
@@ -59,7 +60,7 @@ message AddRouteResponse {
     string error = 2;
 }
 
-//Updata train route
+//Updata train routeroutemap
 message UpdateRequest{
     int64 trainnumber = 1;
     string route =2;
@@ -67,4 +68,21 @@ message UpdateRequest{
 message UpdateResponse{
     int64 status = 1;
     string error = 2;
+}
+
+//Search train 
+message SearchTrainRequest{
+    string date =1;
+    string sourcestationid=2;
+    string destinationstationid=3;
+}
+message SearchTrainResponse {
+    int64 status = 1;
+    string error = 2;
+    repeated TrainData traindata=3;
+}
+
+message TrainData{
+    string trainname =1;
+    google.protobuf.Timestamp time = 2;
 }

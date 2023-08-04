@@ -123,3 +123,37 @@ func (h *TrainHandler) AddTrain(ctx context.Context, req *pb.AddTrainRequest) (*
 		Status: http.StatusOK,
 	}, nil
 }
+
+func (h *TrainHandler) SearchTrain(ctx context.Context, req *pb.SearchTrainRequest) (*pb.SearchTrainResponse, error) {
+
+	sourceid, err := primitive.ObjectIDFromHex(req.Sourcestationid)
+	if err != nil {
+		log.Fatal("Converting the string to primitive.ObjectId err", err)
+	}
+	destinationid, err := primitive.ObjectIDFromHex(req.Destinationstationid)
+	if err != nil {
+		log.Fatal("Converting the string to primitive.ObjectId err", err)
+	}
+
+	searchData := domain.SearchingTrainRequstedData{
+		Date:                 req.Date,
+		SourceStationid:      sourceid,
+		DestinationStationid: destinationid,
+	}
+
+	res, err := h.useCase.SearchTrain(ctx, searchData)
+
+	response := &pb.SearchTrainResponse{
+		Traindata: make([]*pb.TrainData, len(res.SearcheResponse)), // Initialize the slice
+		Status:    http.StatusOK,
+	}
+
+	for i, rs := range res.SearcheResponse {
+		response.Traindata[i] = &pb.TrainData{
+			Trainname: rs.TrainName,
+			Time:      nil,
+		}
+	}
+
+	return response, nil
+}

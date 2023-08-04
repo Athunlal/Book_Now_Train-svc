@@ -13,9 +13,20 @@ type TrainUseCase struct {
 	Repo interfaces.TrainRepo
 }
 
+// SearchTrain implements interfaces.TrainUseCase.
+func (use *TrainUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
+	res, err := use.Repo.SearchTrain(ctx, searcheData)
+	return res, err
+}
+
 // UpdateTrainRoute implements interfaces.TrainUseCase.
 func (use *TrainUseCase) UpdateTrainRoute(ctx context.Context, trainData domain.Train) error {
-	err := use.Repo.UpdateTrainRoute(ctx, trainData)
+	_, err := use.Repo.FindByTrainNumber(ctx, trainData)
+	if err == nil {
+		err = use.Repo.UpdateTrainRoute(ctx, trainData)
+	} else {
+		return errors.New("Invalid train number")
+	}
 	return err
 }
 

@@ -3,15 +3,63 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowTrain-svc/pkg/repository/interface"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type TrainDataBase struct {
 	DB *mongo.Database
+}
+
+func (db *TrainDataBase) SearchTrain(ctx context.Context, searchData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
+	collectionTrain := db.DB.Collection("train")
+
+	sourceStationID := searchData.SourceStationid
+	destinationStationID := searchData.DestinationStationid
+
+	pipeline := mongo.Pipeline{
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "route",
+			"localField":   "route",
+			"foreignField": "_id",
+			"as":           "train_route",
+		}}},
+		{{Key: "$unwind", Value: "$train_route"}},
+		{{Key: "$match", Value: bson.M{
+			"train_route.routemap.stationid": bson.M{"$all": []primitive.ObjectID{sourceStationID, destinationStationID}},
+		}}},
+	}
+
+	cur, err := collectionTrain.Aggregate(context.Background(), pipeline)
+	if err != nil {
+		log.Printf("Error executing aggregation pipeline: %v\n", err)
+		return domain.SearchingTrainResponseData{}, err
+	}
+	defer cur.Close(context.Background())
+
+	var trains []domain.Train
+	for cur.Next(context.Background()) {
+		var train domain.Train
+		if err := cur.Decode(&train); err != nil {
+			log.Printf("Error decoding document: %v\n", err)
+			return domain.SearchingTrainResponseData{}, err
+		}
+		trains = append(trains, train)
+	}
+
+	if err := cur.Err(); err != nil {
+		log.Printf("Error reading cursor: %v\n", err)
+		return domain.SearchingTrainResponseData{}, err
+	}
+
+	return domain.SearchingTrainResponseData{
+		SearcheResponse: trains,
+	}, nil
 }
 
 // UpdateTrainRoute implements interfaces.TrainRepo.
@@ -60,7 +108,7 @@ func (db *TrainDataBase) FindByStationName(ctx context.Context, station domain.S
 
 // FindbyTrainName implements interfaces.TrainRepo.
 func (db *TrainDataBase) FindbyTrainName(ctx context.Context, train domain.Train) (domain.Train, error) {
-	filter := bson.M{"trainname": train.TrainName}
+	filter := bson.M{"trainName": train.TrainName}
 	var result domain.Train
 	err := db.DB.Collection("train").FindOne(ctx, filter).Decode(&result)
 
@@ -77,7 +125,7 @@ func (db *TrainDataBase) AddTrain(tx context.Context, train domain.Train) error 
 
 // FindByTrainNumber implements interfaces.TrainRepo.
 func (db *TrainDataBase) FindByTrainNumber(tx context.Context, train domain.Train) (domain.Train, error) {
-	filter := bson.M{"trainumber": train.TrainNumber}
+	filter := bson.M{"trainNumber": train.TrainNumber}
 	var result domain.Train
 	err := db.DB.Collection("train").FindOne(tx, filter).Decode(&result)
 
