@@ -22,6 +22,28 @@ func NewTrainHandler(usecase interfaces.TrainUseCase) *TrainHandler {
 	}
 }
 
+func (h *TrainHandler) ViewTrain(ctx context.Context, req *pb.ViewTrainRequest) (*pb.ViewTrainResponse, error) {
+	res, err := h.useCase.ViewTrain(ctx)
+	if err != nil {
+		return &pb.ViewTrainResponse{
+			Status: http.StatusUnprocessableEntity,
+			Error:  "Error Found in usecase",
+		}, err
+	}
+
+	response := &pb.ViewTrainResponse{
+		Traindata: make([]*pb.Train, len(res.SearcheResponse)),
+		Status:    http.StatusOK,
+	}
+	for i, rs := range res.SearcheResponse {
+		response.Traindata[i] = &pb.Train{
+			Trainname:   rs.TrainName,
+			Trainnumber: int64(rs.TrainNumber),
+		}
+	}
+	return response, nil
+}
+
 func (h *TrainHandler) UpdateTrainRoute(ctx context.Context, req *pb.UpdateRequest) (*pb.UpdateResponse, error) {
 	routeid, err := primitive.ObjectIDFromHex(req.Route)
 	if err != nil {

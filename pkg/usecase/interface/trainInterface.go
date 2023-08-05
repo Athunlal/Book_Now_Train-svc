@@ -12,4 +12,6 @@ type TrainUseCase interface {
 	AddRoute(ctx context.Context, route domain.Route) error
 	UpdateTrainRoute(ctx context.Context, trainData domain.Train) error
 	SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error)
+
+	ViewTrain(ctx context.Context) (*domain.SearchingTrainResponseData, error)
 }

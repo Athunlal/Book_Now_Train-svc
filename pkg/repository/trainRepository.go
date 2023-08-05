@@ -16,6 +16,29 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// ViewTrain implements interfaces.TrainRepo.
+func (db *TrainDataBase) ViewTrain(ctx context.Context) (*domain.SearchingTrainResponseData, error) {
+	var Train []domain.Train
+	cursor, err := db.DB.Collection("train").Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	for cursor.Next(ctx) {
+		var train domain.Train
+		if err := cursor.Decode(&train); err != nil {
+			return nil, err
+		}
+		Train = append(Train, train)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return &domain.SearchingTrainResponseData{
+		SearcheResponse: Train,
+	}, nil
+}
+
 func (db *TrainDataBase) SearchTrain(ctx context.Context, searchData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
 	collectionTrain := db.DB.Collection("train")
 

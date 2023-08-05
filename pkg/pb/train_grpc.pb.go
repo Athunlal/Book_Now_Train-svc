@@ -23,6 +23,7 @@ type TrainManagementClient interface {
 	AddRoute(ctx context.Context, in *AddRouteRequest, opts ...grpc.CallOption) (*AddRouteResponse, error)
 	UpdateTrainRoute(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
 	SearchTrain(ctx context.Context, in *SearchTrainRequest, opts ...grpc.CallOption) (*SearchTrainResponse, error)
+	ViewTrain(ctx context.Context, in *ViewTrainRequest, opts ...grpc.CallOption) (*ViewTrainResponse, error)
 }
 
 type trainManagementClient struct {
@@ -78,6 +79,15 @@ func (c *trainManagementClient) SearchTrain(ctx context.Context, in *SearchTrain
 	return out, nil
 }
 
+func (c *trainManagementClient) ViewTrain(ctx context.Context, in *ViewTrainRequest, opts ...grpc.CallOption) (*ViewTrainResponse, error) {
+	out := new(ViewTrainResponse)
+	err := c.cc.Invoke(ctx, "/Train.TrainManagement/viewTrain", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TrainManagementServer is the server API for TrainManagement service.
 // All implementations must embed UnimplementedTrainManagementServer
 // for forward compatibility
@@ -87,6 +97,7 @@ type TrainManagementServer interface {
 	AddRoute(context.Context, *AddRouteRequest) (*AddRouteResponse, error)
 	UpdateTrainRoute(context.Context, *UpdateRequest) (*UpdateResponse, error)
 	SearchTrain(context.Context, *SearchTrainRequest) (*SearchTrainResponse, error)
+	ViewTrain(context.Context, *ViewTrainRequest) (*ViewTrainResponse, error)
 	mustEmbedUnimplementedTrainManagementServer()
 }
 
@@ -108,6 +119,9 @@ func (UnimplementedTrainManagementServer) UpdateTrainRoute(context.Context, *Upd
 }
 func (UnimplementedTrainManagementServer) SearchTrain(context.Context, *SearchTrainRequest) (*SearchTrainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchTrain not implemented")
+}
+func (UnimplementedTrainManagementServer) ViewTrain(context.Context, *ViewTrainRequest) (*ViewTrainResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ViewTrain not implemented")
 }
 func (UnimplementedTrainManagementServer) mustEmbedUnimplementedTrainManagementServer() {}
 
@@ -212,6 +226,24 @@ func _TrainManagement_SearchTrain_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TrainManagement_ViewTrain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ViewTrainRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrainManagementServer).ViewTrain(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Train.TrainManagement/viewTrain",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrainManagementServer).ViewTrain(ctx, req.(*ViewTrainRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TrainManagement_ServiceDesc is the grpc.ServiceDesc for TrainManagement service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -238,6 +270,10 @@ var TrainManagement_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchTrain",
 			Handler:    _TrainManagement_SearchTrain_Handler,
+		},
+		{
+			MethodName: "viewTrain",
+			Handler:    _TrainManagement_ViewTrain_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

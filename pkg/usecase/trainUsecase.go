@@ -13,6 +13,12 @@ type TrainUseCase struct {
 	Repo interfaces.TrainRepo
 }
 
+// ViewTrain implements interfaces.TrainUseCase.
+func (use *TrainUseCase) ViewTrain(ctx context.Context) (*domain.SearchingTrainResponseData, error) {
+	res, err := use.Repo.ViewTrain(ctx)
+	return res, err
+}
+
 // SearchTrain implements interfaces.TrainUseCase.
 func (use *TrainUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
 	res, err := use.Repo.SearchTrain(ctx, searcheData)

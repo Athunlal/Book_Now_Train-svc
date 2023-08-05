@@ -11,7 +11,22 @@ service TrainManagement {
     rpc AddStation(AddStationRequest) returns (AddStationResponse) {}
     rpc AddRoute(AddRouteRequest) returns (AddRouteResponse) {}
     rpc UpdateTrainRoute(UpdateRequest)returns(UpdateResponse){}
-    rpc SearchTrain(SearchTrainRequest) returns (SearchTrainResponse) {}    
+    rpc SearchTrain(SearchTrainRequest) returns (SearchTrainResponse) {}   
+    rpc viewTrain(ViewTrainRequest)returns(ViewTrainResponse){}
+ 
+}
+
+//viewTrain 
+message ViewTrainRequest{}
+
+message ViewTrainResponse{
+   int64 status = 1;
+   string error = 2;
+   repeated Train traindata =3;
+}
+message Train {
+    string trainname =1;
+    int64 trainnumber =2;
 }
 
 //Add station 
