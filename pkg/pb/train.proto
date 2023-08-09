@@ -12,8 +12,31 @@ service TrainManagement {
     rpc AddRoute(AddRouteRequest) returns (AddRouteResponse) {}
     rpc UpdateTrainRoute(UpdateRequest)returns(UpdateResponse){}
     rpc SearchTrain(SearchTrainRequest) returns (SearchTrainResponse) {}   
-    rpc viewTrain(ViewTrainRequest)returns(ViewTrainResponse){}
- 
+    rpc ViewTrain(ViewTrainRequest)returns(ViewTrainResponse){}
+    rpc AddSeat(AddSeatRequest)returns(AddSeatResponse){}
+    rpc UpdateSeatIntoTrain(updateSeatIntoTrainRequest)returns(updateSeatIntoTrainResponse){}
+}
+//update seat into train 
+message updateSeatIntoTrainRequest{
+    int64 trainnumber = 1; 
+    string seatid = 2;
+}
+message updateSeatIntoTrainResponse{
+    int64 status = 1;
+    string error = 2;
+}
+
+//Adding seat
+message AddSeatRequest {
+    int64 price =1;
+    int64 numberofseat =2;
+    string typeofseat=3;
+    string compartment = 4;
+
+}
+message AddSeatResponse {
+    int64 status = 1;
+    string error = 2;
 }
 
 //viewTrain 

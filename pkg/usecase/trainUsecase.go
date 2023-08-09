@@ -7,10 +7,37 @@ import (
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowTrain-svc/pkg/repository/interface"
 	usecase "github.com/athunlal/bookNowTrain-svc/pkg/usecase/interface"
+	"github.com/athunlal/bookNowTrain-svc/pkg/utils"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type TrainUseCase struct {
 	Repo interfaces.TrainRepo
+}
+
+// UpadateSeatInotTrain implements interfaces.TrainUseCase.
+func (use *TrainUseCase) UpadateSeatInotTrain(ctx context.Context, updateData domain.Train) error {
+	_, err := use.Repo.FindByTrainNumber(ctx, updateData)
+	if err != nil {
+		return errors.New("Train number not exist")
+	}
+	err = use.Repo.UpdateSeatIntoTrain(ctx, updateData)
+	return err
+}
+
+// AddSeat implements interfaces.TrainUseCase.
+func (use *TrainUseCase) AddSeat(ctx context.Context, seat domain.SeatData) (error, *mongo.InsertOneResult) {
+	allocatedSeate := utils.SeateAllocation(seat)
+	err, response := use.Repo.FindSeatbyCompartment(ctx, allocatedSeate)
+	var res *mongo.InsertOneResult
+	if err != nil {
+		err, res = use.Repo.AddSeat(ctx, allocatedSeate)
+		return err, res
+	}
+	if response.Compartment == seat.Compartment {
+		return errors.New("Compartment name is already exist"), nil
+	}
+	return nil, res
 }
 
 // ViewTrain implements interfaces.TrainUseCase.

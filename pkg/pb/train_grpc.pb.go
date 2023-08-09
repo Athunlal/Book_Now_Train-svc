@@ -24,6 +24,8 @@ type TrainManagementClient interface {
 	UpdateTrainRoute(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
 	SearchTrain(ctx context.Context, in *SearchTrainRequest, opts ...grpc.CallOption) (*SearchTrainResponse, error)
 	ViewTrain(ctx context.Context, in *ViewTrainRequest, opts ...grpc.CallOption) (*ViewTrainResponse, error)
+	AddSeat(ctx context.Context, in *AddSeatRequest, opts ...grpc.CallOption) (*AddSeatResponse, error)
+	UpdateSeatIntoTrain(ctx context.Context, in *UpdateSeatIntoTrainRequest, opts ...grpc.CallOption) (*UpdateSeatIntoTrainResponse, error)
 }
 
 type trainManagementClient struct {
@@ -81,7 +83,25 @@ func (c *trainManagementClient) SearchTrain(ctx context.Context, in *SearchTrain
 
 func (c *trainManagementClient) ViewTrain(ctx context.Context, in *ViewTrainRequest, opts ...grpc.CallOption) (*ViewTrainResponse, error) {
 	out := new(ViewTrainResponse)
-	err := c.cc.Invoke(ctx, "/Train.TrainManagement/viewTrain", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Train.TrainManagement/ViewTrain", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trainManagementClient) AddSeat(ctx context.Context, in *AddSeatRequest, opts ...grpc.CallOption) (*AddSeatResponse, error) {
+	out := new(AddSeatResponse)
+	err := c.cc.Invoke(ctx, "/Train.TrainManagement/AddSeat", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trainManagementClient) UpdateSeatIntoTrain(ctx context.Context, in *UpdateSeatIntoTrainRequest, opts ...grpc.CallOption) (*UpdateSeatIntoTrainResponse, error) {
+	out := new(UpdateSeatIntoTrainResponse)
+	err := c.cc.Invoke(ctx, "/Train.TrainManagement/UpdateSeatIntoTrain", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -98,6 +118,8 @@ type TrainManagementServer interface {
 	UpdateTrainRoute(context.Context, *UpdateRequest) (*UpdateResponse, error)
 	SearchTrain(context.Context, *SearchTrainRequest) (*SearchTrainResponse, error)
 	ViewTrain(context.Context, *ViewTrainRequest) (*ViewTrainResponse, error)
+	AddSeat(context.Context, *AddSeatRequest) (*AddSeatResponse, error)
+	UpdateSeatIntoTrain(context.Context, *UpdateSeatIntoTrainRequest) (*UpdateSeatIntoTrainResponse, error)
 	mustEmbedUnimplementedTrainManagementServer()
 }
 
@@ -122,6 +144,12 @@ func (UnimplementedTrainManagementServer) SearchTrain(context.Context, *SearchTr
 }
 func (UnimplementedTrainManagementServer) ViewTrain(context.Context, *ViewTrainRequest) (*ViewTrainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ViewTrain not implemented")
+}
+func (UnimplementedTrainManagementServer) AddSeat(context.Context, *AddSeatRequest) (*AddSeatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddSeat not implemented")
+}
+func (UnimplementedTrainManagementServer) UpdateSeatIntoTrain(context.Context, *UpdateSeatIntoTrainRequest) (*UpdateSeatIntoTrainResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSeatIntoTrain not implemented")
 }
 func (UnimplementedTrainManagementServer) mustEmbedUnimplementedTrainManagementServer() {}
 
@@ -236,10 +264,46 @@ func _TrainManagement_ViewTrain_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Train.TrainManagement/viewTrain",
+		FullMethod: "/Train.TrainManagement/ViewTrain",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TrainManagementServer).ViewTrain(ctx, req.(*ViewTrainRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrainManagement_AddSeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddSeatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrainManagementServer).AddSeat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Train.TrainManagement/AddSeat",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrainManagementServer).AddSeat(ctx, req.(*AddSeatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrainManagement_UpdateSeatIntoTrain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateSeatIntoTrainRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrainManagementServer).UpdateSeatIntoTrain(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Train.TrainManagement/UpdateSeatIntoTrain",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrainManagementServer).UpdateSeatIntoTrain(ctx, req.(*UpdateSeatIntoTrainRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -272,8 +336,16 @@ var TrainManagement_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TrainManagement_SearchTrain_Handler,
 		},
 		{
-			MethodName: "viewTrain",
+			MethodName: "ViewTrain",
 			Handler:    _TrainManagement_ViewTrain_Handler,
+		},
+		{
+			MethodName: "AddSeat",
+			Handler:    _TrainManagement_AddSeat_Handler,
+		},
+		{
+			MethodName: "UpdateSeatIntoTrain",
+			Handler:    _TrainManagement_UpdateSeatIntoTrain_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

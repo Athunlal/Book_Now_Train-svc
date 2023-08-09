@@ -22,6 +22,47 @@ func NewTrainHandler(usecase interfaces.TrainUseCase) *TrainHandler {
 	}
 }
 
+func (h *TrainHandler) UpdateSeatIntoTrain(ctx context.Context, req *pb.UpdateSeatIntoTrainRequest) (*pb.UpdateSeatIntoTrainResponse, error) {
+	seatid, err := primitive.ObjectIDFromHex(req.Seatid)
+	if err != nil {
+		log.Fatal("Converting the string to primitive.ObjectId err", err)
+	}
+	updateData := domain.Train{
+		TrainNumber: uint(req.Trainnumber),
+		Seatsid:     seatid,
+	}
+	err = h.useCase.UpadateSeatInotTrain(ctx, updateData)
+	if err != nil {
+		return &pb.UpdateSeatIntoTrainResponse{
+			Status: http.StatusUnprocessableEntity,
+			Error:  "Error Found in usecase",
+		}, err
+	}
+	return &pb.UpdateSeatIntoTrainResponse{
+		Status: http.StatusOK,
+	}, nil
+}
+
+func (h *TrainHandler) AddSeat(ctx context.Context, req *pb.AddSeatRequest) (*pb.AddSeatResponse, error) {
+	seatdata := domain.SeatData{
+		Price:         float32(req.Price),
+		NumbserOfSeat: int(req.Numberofseat),
+		TypeOfSeat:    req.Typeofseat,
+		Compartment:   req.Compartment,
+	}
+	err, _ := h.useCase.AddSeat(ctx, seatdata)
+
+	if err != nil {
+		return &pb.AddSeatResponse{
+			Status: http.StatusUnprocessableEntity,
+			Error:  "Error Found in usecase",
+		}, err
+	}
+	return &pb.AddSeatResponse{
+		Status: http.StatusOK,
+	}, nil
+}
+
 func (h *TrainHandler) ViewTrain(ctx context.Context, req *pb.ViewTrainRequest) (*pb.ViewTrainResponse, error) {
 	res, err := h.useCase.ViewTrain(ctx)
 	if err != nil {

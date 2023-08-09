@@ -16,6 +16,38 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// UpdateSeatIntoTrain implements interfaces.TrainRepo.
+func (db *TrainDataBase) UpdateSeatIntoTrain(ctx context.Context, updateData domain.Train) error {
+	collection := db.DB.Collection("train")
+	filter := bson.M{"trainNumber": updateData.TrainNumber}
+	update := bson.M{"$set": bson.M{"seat_id": updateData.Seatsid}}
+	_, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		fmt.Printf("Error updating train: %v\n", err)
+	}
+	return err
+}
+
+// FindSeatbyCompartment implements interfaces.TrainRepo.
+func (db *TrainDataBase) FindSeatbyCompartment(ctx context.Context, seat domain.Seats) (error, domain.Seats) {
+	filter := bson.M{"compartment": seat.Compartment}
+	var result domain.Seats
+	err := db.DB.Collection("seat").FindOne(ctx, filter).Decode(&result)
+	return err, result
+}
+
+// AddSeat implements interfaces.TrainRepo.
+func (db *TrainDataBase) AddSeat(ctx context.Context, seat domain.Seats) (error, *mongo.InsertOneResult) {
+	collection := db.DB.Collection("seat")
+
+	res, err := collection.InsertOne(ctx, seat)
+	if err != nil {
+		return err, nil
+	}
+
+	return nil, res
+}
+
 // ViewTrain implements interfaces.TrainRepo.
 func (db *TrainDataBase) ViewTrain(ctx context.Context) (*domain.SearchingTrainResponseData, error) {
 	var Train []domain.Train

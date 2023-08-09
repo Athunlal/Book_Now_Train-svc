@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type TrainRepo interface {
@@ -20,4 +21,7 @@ type TrainRepo interface {
 	SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error)
 
 	ViewTrain(ctx context.Context) (*domain.SearchingTrainResponseData, error)
+	AddSeat(ctc context.Context, seat domain.Seats) (error, *mongo.InsertOneResult)
+	FindSeatbyCompartment(ctx context.Context, seat domain.Seats) (error, domain.Seats)
+	UpdateSeatIntoTrain(ctx context.Context, updateData domain.Train) error
 }
