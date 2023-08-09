@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -23,15 +24,21 @@ func NewTrainHandler(usecase interfaces.TrainUseCase) *TrainHandler {
 }
 
 func (h *TrainHandler) UpdateSeatIntoTrain(ctx context.Context, req *pb.UpdateSeatIntoTrainRequest) (*pb.UpdateSeatIntoTrainResponse, error) {
-	seatid, err := primitive.ObjectIDFromHex(req.Seatid)
-	if err != nil {
-		log.Fatal("Converting the string to primitive.ObjectId err", err)
-	}
+	fmt.Println("This is the trian number : ", req.Trainnumber)
+
 	updateData := domain.Train{
 		TrainNumber: uint(req.Trainnumber),
-		Seatsid:     seatid,
+		Compartment: make([]domain.Compartment, len(req.Compartments)),
 	}
-	err = h.useCase.UpadateSeatInotTrain(ctx, updateData)
+
+	for i, rs := range req.Compartments {
+		seatid, _ := primitive.ObjectIDFromHex(rs.Seatid)
+		updateData.Compartment[i] = domain.Compartment{
+			Seatid: seatid,
+		}
+	}
+
+	err := h.useCase.UpadateSeatInotTrain(ctx, updateData)
 	if err != nil {
 		return &pb.UpdateSeatIntoTrainResponse{
 			Status: http.StatusUnprocessableEntity,

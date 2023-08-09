@@ -11,6 +11,10 @@ type Train struct {
 	Route       primitive.ObjectID `json:"route,omitempty" bson:"route,omitempty"`
 	TrainType   string             `json:"traintype" bson:"traintype,omitempty"`
 	Seatsid     primitive.ObjectID `json:"seatid,omitempty" bson:"_id,omitempty"`
+	Compartment []Compartment      `json:"compartment,omitempty" bson:"compartment,omitempty"`
+}
+type Compartment struct {
+	Seatid primitive.ObjectID `json:"seatid,omitempty" bson:"_id,omitempty"`
 }
 type Station struct {
 	StationId   primitive.ObjectID `json:"stationid" bson:"_id,omitempty"`

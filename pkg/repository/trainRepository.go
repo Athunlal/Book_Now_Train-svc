@@ -18,9 +18,10 @@ type TrainDataBase struct {
 
 // UpdateSeatIntoTrain implements interfaces.TrainRepo.
 func (db *TrainDataBase) UpdateSeatIntoTrain(ctx context.Context, updateData domain.Train) error {
+	fmt.Println(updateData.Compartment)
 	collection := db.DB.Collection("train")
 	filter := bson.M{"trainNumber": updateData.TrainNumber}
-	update := bson.M{"$set": bson.M{"seat_id": updateData.Seatsid}}
+	update := bson.M{"$set": bson.M{"compartment": updateData.Compartment}}
 	_, err := collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		fmt.Printf("Error updating train: %v\n", err)
