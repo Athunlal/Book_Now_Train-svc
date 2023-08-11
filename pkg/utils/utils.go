@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -46,4 +47,16 @@ func SeateAllocation(seateData domain.SeatData) domain.Seats {
 	}
 
 	return allocated
+}
+
+func ConvertStringToTimestamp(input string) (primitive.Timestamp, error) {
+	parsedTime, err := time.Parse(time.RFC3339, input)
+	if err != nil {
+		return primitive.Timestamp{}, err
+	}
+
+	seconds := parsedTime.Unix()
+	nanos := uint32(parsedTime.Nanosecond()) // Convert int32 to uint32
+
+	return primitive.Timestamp{T: uint32(seconds), I: nanos}, nil
 }

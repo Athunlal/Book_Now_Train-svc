@@ -6,12 +6,14 @@ import (
 )
 
 type Train struct {
-	TrainNumber uint               `json:"trainNumber" bson:"trainNumber,omitempty"`
-	TrainName   string             `json:"trainName" bson:"trainName,omitempty" validate:"required,min=2,max=50"`
-	Route       primitive.ObjectID `json:"route,omitempty" bson:"route,omitempty"`
-	TrainType   string             `json:"traintype" bson:"traintype,omitempty"`
-	Seatsid     primitive.ObjectID `json:"seatid,omitempty" bson:"_id,omitempty"`
-	Compartment []Compartment      `json:"compartment,omitempty" bson:"compartment,omitempty"`
+	TrainNumber    uint               `json:"trainNumber" bson:"trainNumber,omitempty"`
+	TrainName      string             `json:"trainName" bson:"trainName,omitempty" validate:"required,min=2,max=50"`
+	Route          primitive.ObjectID `json:"route,omitempty" bson:"route,omitempty"`
+	TrainType      string             `json:"traintype" bson:"traintype,omitempty"`
+	StartingTime   string             `json:"startingtime,omitempty" bson:"startingtime,omitempty"`
+	EndingtingTime string             `json:"endingtingtime,omitempty" bson:"endingtingtime,omitempty"`
+	Seatsid        primitive.ObjectID `json:"seatid,omitempty" bson:"_id,omitempty"`
+	Compartment    []Compartment      `json:"compartment,omitempty" bson:"compartment,omitempty"`
 }
 type Compartment struct {
 	Seatid primitive.ObjectID `json:"seatid,omitempty" bson:"_id,omitempty"`

@@ -71,7 +71,9 @@ message AddStationResponse {
 message AddTrainRequest {
     int64 trainnumber = 1;
     string trainname = 2;
-    string traintype=3;
+    string startingtime = 3;
+    string endingtime = 4;
+    string traintype=5;
 }
 
 message AddTrainResponse {

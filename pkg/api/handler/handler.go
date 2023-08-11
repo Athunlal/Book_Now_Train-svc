@@ -175,10 +175,13 @@ func (h *TrainHandler) AddStation(ctx context.Context, req *pb.AddStationRequest
 }
 
 func (h *TrainHandler) AddTrain(ctx context.Context, req *pb.AddTrainRequest) (*pb.AddTrainResponse, error) {
+
 	train := domain.Train{
-		TrainName:   req.Trainname,
-		TrainNumber: uint(req.Trainnumber),
-		TrainType:   req.Traintype,
+		TrainName:      req.Trainname,
+		TrainNumber:    uint(req.Trainnumber),
+		TrainType:      req.Traintype,
+		StartingTime:   req.Startingtime,
+		EndingtingTime: req.Endingtime,
 	}
 
 	err := h.useCase.AddTrain(ctx, train)
