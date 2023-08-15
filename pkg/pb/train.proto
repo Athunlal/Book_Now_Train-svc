@@ -15,7 +15,19 @@ service TrainManagement {
     rpc ViewTrain(ViewTrainRequest)returns(ViewTrainResponse){}
     rpc AddSeat(AddSeatRequest)returns(AddSeatResponse){}
     rpc UpdateSeatIntoTrain(updateSeatIntoTrainRequest)returns(updateSeatIntoTrainResponse){}
+    rpc ViewStation(ViewRequest)returns(ViewStationResponse){}  
 }
+//View station
+message ViewRequest{}
+message ViewStationResponse{
+    repeated station stations =1;
+}
+message station{
+    string stationid = 1;
+    string staionname = 2;
+    string city = 3;
+}
+
 //update seat into train 
 message Compartment{
     string seatid = 1;

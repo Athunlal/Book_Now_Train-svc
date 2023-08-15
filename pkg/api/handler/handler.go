@@ -23,6 +23,11 @@ func NewTrainHandler(usecase interfaces.TrainUseCase) *TrainHandler {
 	}
 }
 
+func (h *TrainHandler) ViewStation(ctx context.Context, req *pb.ViewRequest) (*pb.ViewStationResponse, error) {
+
+	return &pb.ViewStationResponse{}, errors
+}
+
 func (h *TrainHandler) UpdateSeatIntoTrain(ctx context.Context, req *pb.UpdateSeatIntoTrainRequest) (*pb.UpdateSeatIntoTrainResponse, error) {
 	fmt.Println("This is the trian number : ", req.Trainnumber)
 

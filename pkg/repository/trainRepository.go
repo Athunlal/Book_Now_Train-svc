@@ -16,6 +16,27 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// ViewStation implements interfaces.TrainRepo.
+func (db *TrainDataBase) ViewStation(ctx context.Context) (*domain.Station, error) {
+	var Station []domain.Station
+	cursor, err := db.DB.Collection("station").Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	for cursor.Next(ctx) {
+		var station domain.Station
+		if err := cursor.Decode(&station); err != nil {
+			return nil, err
+		}
+		Station = append(Station, station)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return &Station, nil
+}
+
 // UpdateSeatIntoTrain implements interfaces.TrainRepo.
 func (db *TrainDataBase) UpdateSeatIntoTrain(ctx context.Context, updateData domain.Train) error {
 	fmt.Println(updateData.Compartment)
@@ -144,8 +165,6 @@ func (db *TrainDataBase) AddRoute(ctx context.Context, route domain.Route) error
 	_, err := collection.InsertOne(context.Background(), route)
 	return err
 }
-
-// AddRoute implements interfaces.TrainRepo.
 
 // AddStation implements interfaces.TrainRepo.
 func (db *TrainDataBase) AddStation(ctx context.Context, station domain.Station) error {
