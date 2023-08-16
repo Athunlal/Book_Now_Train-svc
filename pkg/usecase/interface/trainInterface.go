@@ -16,4 +16,5 @@ type TrainUseCase interface {
 	AddSeat(ctx context.Context, seat domain.SeatData) (error, *mongo.InsertOneResult)
 	ViewTrain(ctx context.Context) (*domain.SearchingTrainResponseData, error)
 	UpadateSeatInotTrain(ctx context.Context, updateData domain.Train) error
+	ViewStation(ctx context.Context) (*domain.SearchStationRes, error)
 }

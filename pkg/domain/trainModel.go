@@ -64,3 +64,6 @@ type SeatData struct {
 	Compartment   string `json:"compartment,omitempty" bson:"compartment,omitempty"`
 	TypeOfSeat    string
 }
+type SearchStationRes struct {
+	Station []Station
+}

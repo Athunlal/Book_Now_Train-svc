@@ -15,6 +15,12 @@ type TrainUseCase struct {
 	Repo interfaces.TrainRepo
 }
 
+// ViewStation implements interfaces.TrainUseCase.
+func (use *TrainUseCase) ViewStation(ctx context.Context) (*domain.SearchStationRes, error) {
+	res, err := use.Repo.ViewStation(ctx)
+	return res, err
+}
+
 // UpadateSeatInotTrain implements interfaces.TrainUseCase.
 func (use *TrainUseCase) UpadateSeatInotTrain(ctx context.Context, updateData domain.Train) error {
 	_, err := use.Repo.FindByTrainNumber(ctx, updateData)

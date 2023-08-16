@@ -20,11 +20,13 @@ service TrainManagement {
 //View station
 message ViewRequest{}
 message ViewStationResponse{
-    repeated station stations =1;
+    int64 status = 1;
+    string error = 2;
+    repeated station stations =3;
 }
 message station{
     string stationid = 1;
-    string staionname = 2;
+    string StationName = 2;
     string city = 3;
 }
 

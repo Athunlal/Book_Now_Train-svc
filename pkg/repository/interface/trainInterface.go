@@ -21,7 +21,8 @@ type TrainRepo interface {
 	SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error)
 
 	ViewTrain(ctx context.Context) (*domain.SearchingTrainResponseData, error)
-	ViewStation(ctx context.Context) (*domain.Station, error)
+	ViewStation(ctx context.Context) (*domain.SearchStationRes, error)
+
 	AddSeat(ctc context.Context, seat domain.Seats) (error, *mongo.InsertOneResult)
 	FindSeatbyCompartment(ctx context.Context, seat domain.Seats) (error, domain.Seats)
 	UpdateSeatIntoTrain(ctx context.Context, updateData domain.Train) error

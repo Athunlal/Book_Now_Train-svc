@@ -17,8 +17,8 @@ type TrainDataBase struct {
 }
 
 // ViewStation implements interfaces.TrainRepo.
-func (db *TrainDataBase) ViewStation(ctx context.Context) (*domain.Station, error) {
-	var Station []domain.Station
+func (db *TrainDataBase) ViewStation(ctx context.Context) (*domain.SearchStationRes, error) {
+	var Station domain.SearchStationRes
 	cursor, err := db.DB.Collection("station").Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
@@ -28,12 +28,11 @@ func (db *TrainDataBase) ViewStation(ctx context.Context) (*domain.Station, erro
 		if err := cursor.Decode(&station); err != nil {
 			return nil, err
 		}
-		Station = append(Station, station)
+		Station.Station = append(Station.Station, station)
 	}
 	if err := cursor.Err(); err != nil {
 		return nil, err
 	}
-
 	return &Station, nil
 }
 

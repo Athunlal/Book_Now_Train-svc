@@ -24,8 +24,35 @@ func NewTrainHandler(usecase interfaces.TrainUseCase) *TrainHandler {
 }
 
 func (h *TrainHandler) ViewStation(ctx context.Context, req *pb.ViewRequest) (*pb.ViewStationResponse, error) {
+	res, err := h.useCase.ViewStation(ctx)
 
-	return &pb.ViewStationResponse{}, errors
+	if err != nil {
+		return &pb.ViewStationResponse{
+			Status: http.StatusUnprocessableEntity,
+			Error:  "Error Found in usecase",
+		}, err
+	}
+
+	// Create a slice to store the converted Station data
+	stations := make([]*pb.Station, len(res.Station))
+
+	// Convert domain.Station instances to pb.Station instances
+	for i, station := range res.Station {
+		pbStation := &pb.Station{
+			Stationid:   station.StationId.Hex(),
+			StationName: station.StationName,
+			City:        station.City,
+		}
+		stations[i] = pbStation
+	}
+
+	// Create the response with the converted station data
+	stationResponse := &pb.ViewStationResponse{
+		Status:   http.StatusOK,
+		Stations: stations,
+	}
+
+	return stationResponse, nil
 }
 
 func (h *TrainHandler) UpdateSeatIntoTrain(ctx context.Context, req *pb.UpdateSeatIntoTrainRequest) (*pb.UpdateSeatIntoTrainResponse, error) {
