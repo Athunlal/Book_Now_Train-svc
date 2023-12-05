@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
+	"github.com/athunlal/bookNowTrain-svc/pkg/pb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -59,4 +61,24 @@ func ConvertStringToTimestamp(input string) (primitive.Timestamp, error) {
 	nanos := uint32(parsedTime.Nanosecond()) // Convert int32 to uint32
 
 	return primitive.Timestamp{T: uint32(seconds), I: nanos}, nil
+}
+
+func PrepareSearchData(req *pb.SearchTrainRequest) (domain.SearchingTrainRequstedData, error) {
+	sourceID, err := primitive.ObjectIDFromHex(req.Sourcestationid)
+	if err != nil {
+		return domain.SearchingTrainRequstedData{}, fmt.Errorf("converting the string to primitive.ObjectID: %v", err)
+	}
+
+	destinationID, err := primitive.ObjectIDFromHex(req.Destinationstationid)
+	if err != nil {
+		return domain.SearchingTrainRequstedData{}, fmt.Errorf("converting the string to primitive.ObjectID: %v", err)
+	}
+
+	searchData := domain.SearchingTrainRequstedData{
+		Date:                 req.Date,
+		SourceStationid:      sourceID,
+		DestinationStationid: destinationID,
+	}
+
+	return searchData, nil
 }

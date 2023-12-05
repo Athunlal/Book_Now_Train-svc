@@ -2,13 +2,14 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
 	"github.com/athunlal/bookNowTrain-svc/pkg/pb"
+	"github.com/athunlal/bookNowTrain-svc/pkg/response"
 	interfaces "github.com/athunlal/bookNowTrain-svc/pkg/usecase/interface"
+	"github.com/athunlal/bookNowTrain-svc/pkg/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -23,30 +24,15 @@ func NewTrainHandler(usecase interfaces.TrainUseCase) *TrainHandler {
 	}
 }
 
+//View all station
 func (h *TrainHandler) ViewStation(ctx context.Context, req *pb.ViewRequest) (*pb.ViewStationResponse, error) {
 	res, err := h.useCase.ViewStation(ctx)
-
 	if err != nil {
-		return &pb.ViewStationResponse{
-			Status: http.StatusUnprocessableEntity,
-			Error:  "Error Found in usecase",
-		}, err
+		return response.HandleError(err)
 	}
 
-	// Create a slice to store the converted Station data
-	stations := make([]*pb.Station, len(res.Station))
+	stations := response.ConvertToPBStations(res.Station)
 
-	// Convert domain.Station instances to pb.Station instances
-	for i, station := range res.Station {
-		pbStation := &pb.Station{
-			Stationid:   station.StationId.Hex(),
-			StationName: station.StationName,
-			City:        station.City,
-		}
-		stations[i] = pbStation
-	}
-
-	// Create the response with the converted station data
 	stationResponse := &pb.ViewStationResponse{
 		Status:   http.StatusOK,
 		Stations: stations,
@@ -55,28 +41,24 @@ func (h *TrainHandler) ViewStation(ctx context.Context, req *pb.ViewRequest) (*p
 	return stationResponse, nil
 }
 
+//Updating seat into the Train collection
 func (h *TrainHandler) UpdateSeatIntoTrain(ctx context.Context, req *pb.UpdateSeatIntoTrainRequest) (*pb.UpdateSeatIntoTrainResponse, error) {
-	fmt.Println("This is the trian number : ", req.Trainnumber)
-
-	updateData := domain.Train{
-		TrainNumber: uint(req.Trainnumber),
-		Compartment: make([]domain.Compartment, len(req.Compartments)),
+	updateData, err := response.MapToUpdateData(req)
+	if err != nil {
+		return &pb.UpdateSeatIntoTrainResponse{
+			Status: http.StatusUnprocessableEntity,
+			Error:  "Error in input validation",
+		}, err
 	}
 
-	for i, rs := range req.Compartments {
-		seatid, _ := primitive.ObjectIDFromHex(rs.Seatid)
-		updateData.Compartment[i] = domain.Compartment{
-			Seatid: seatid,
-		}
-	}
-
-	err := h.useCase.UpadateSeatInotTrain(ctx, updateData)
+	err = h.useCase.UpadateSeatInotTrain(ctx, updateData)
 	if err != nil {
 		return &pb.UpdateSeatIntoTrainResponse{
 			Status: http.StatusUnprocessableEntity,
 			Error:  "Error Found in usecase",
 		}, err
 	}
+
 	return &pb.UpdateSeatIntoTrainResponse{
 		Status: http.StatusOK,
 	}, nil
@@ -206,15 +188,9 @@ func (h *TrainHandler) AddStation(ctx context.Context, req *pb.AddStationRequest
 	}, nil
 }
 
+//Add New Train
 func (h *TrainHandler) AddTrain(ctx context.Context, req *pb.AddTrainRequest) (*pb.AddTrainResponse, error) {
-
-	train := domain.Train{
-		TrainName:      req.Trainname,
-		TrainNumber:    uint(req.Trainnumber),
-		TrainType:      req.Traintype,
-		StartingTime:   req.Startingtime,
-		EndingtingTime: req.Endingtime,
-	}
+	train := response.MapToAddTrain(req)
 
 	err := h.useCase.AddTrain(ctx, train)
 	if err != nil {
@@ -229,40 +205,25 @@ func (h *TrainHandler) AddTrain(ctx context.Context, req *pb.AddTrainRequest) (*
 	}, nil
 }
 
+//Search Train By Source Station Id And Destination Station Id
 func (h *TrainHandler) SearchTrain(ctx context.Context, req *pb.SearchTrainRequest) (*pb.SearchTrainResponse, error) {
-
-	sourceid, err := primitive.ObjectIDFromHex(req.Sourcestationid)
+	searchData, err := utils.PrepareSearchData(req)
 	if err != nil {
-		log.Fatal("Converting the string to primitive.ObjectId err", err)
+		return nil, err
 	}
-
-	destinationid, err := primitive.ObjectIDFromHex(req.Destinationstationid)
-	if err != nil {
-		log.Fatal("Converting the string to primitive.ObjectId err", err)
-	}
-
-	searchData := domain.SearchingTrainRequstedData{
-		Date:                 req.Date,
-		SourceStationid:      sourceid,
-		DestinationStationid: destinationid,
-	}
-
 	res, err := h.useCase.SearchTrain(ctx, searchData)
 	if err != nil {
 		return nil, err
 	}
-
-	response := &pb.SearchTrainResponse{
-		Traindata: make([]*pb.TrainData, len(res.SearcheResponse)), // Initialize the slice
-		Status:    http.StatusOK,
-	}
-
-	for i, rs := range res.SearcheResponse {
-		response.Traindata[i] = &pb.TrainData{
-			Trainname: rs.TrainName,
-			Time:      nil,
-		}
-	}
-
+	response := response.MapToSearchTrainResponse(res)
 	return response, nil
+}
+
+//Search Train By Train Name
+func (h *TrainHandler) SearchTrainByName(ctx context.Context, req *pb.SearchTrainByNameRequest) (*pb.SearchTrainByNameResponse, error) {
+	res, err := h.useCase.SearchTrainByName(ctx, req.TrainName)
+	if err != nil {
+		return nil, err
+	}
+	return response.MapToSearchTrainResponseByName(res), nil
 }

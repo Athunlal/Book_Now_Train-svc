@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -19,6 +20,7 @@ type TrainRepo interface {
 
 	UpdateTrainRoute(ctx context.Context, trainData domain.Train) error
 	SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error)
+	SearchTrainbyName(ctx context.Context, tran_name string) (domain.Train, error)
 
 	ViewTrain(ctx context.Context) (*domain.SearchingTrainResponseData, error)
 	ViewStation(ctx context.Context) (*domain.SearchStationRes, error)
@@ -26,4 +28,6 @@ type TrainRepo interface {
 	AddSeat(ctc context.Context, seat domain.Seats) (error, *mongo.InsertOneResult)
 	FindSeatbyCompartment(ctx context.Context, seat domain.Seats) (error, domain.Seats)
 	UpdateSeatIntoTrain(ctx context.Context, updateData domain.Train) error
+
+	FindCompartmentByid(ctx context.Context, compartmentId primitive.ObjectID) error
 }

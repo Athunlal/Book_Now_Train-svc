@@ -16,7 +16,22 @@ service TrainManagement {
     rpc AddSeat(AddSeatRequest)returns(AddSeatResponse){}
     rpc UpdateSeatIntoTrain(updateSeatIntoTrainRequest)returns(updateSeatIntoTrainResponse){}
     rpc ViewStation(ViewRequest)returns(ViewStationResponse){}  
+
+    rpc SearchTrainByName(SearchTrainByNameRequest)returns(SearchTrainByNameResponse){}
 }
+
+//search train by name 
+message SearchTrainByNameRequest{
+    string trainName = 1;
+}
+message SearchTrainByNameResponse{
+    string trainName = 1;
+    string trainType = 2;
+    string tranNumber = 3;
+    string startingtime = 4;
+    string endingtime = 5;
+}
+
 //View station
 message ViewRequest{}
 message ViewStationResponse{
