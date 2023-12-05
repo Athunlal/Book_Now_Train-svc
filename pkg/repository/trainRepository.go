@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 
@@ -131,6 +132,12 @@ func (db *TrainDataBase) SearchTrain(ctx context.Context, searchData domain.Sear
 	if err := cur.Err(); err != nil {
 		log.Printf("Error reading cursor: %v\n", err)
 		return domain.SearchingTrainResponseData{}, err
+	}
+
+	if len(trains) == 0 {
+		return domain.SearchingTrainResponseData{
+			SearcheResponse: nil,
+		}, errors.New("Train not found")
 	}
 
 	return domain.SearchingTrainResponseData{

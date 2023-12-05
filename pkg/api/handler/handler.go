@@ -235,6 +235,7 @@ func (h *TrainHandler) SearchTrain(ctx context.Context, req *pb.SearchTrainReque
 	if err != nil {
 		log.Fatal("Converting the string to primitive.ObjectId err", err)
 	}
+
 	destinationid, err := primitive.ObjectIDFromHex(req.Destinationstationid)
 	if err != nil {
 		log.Fatal("Converting the string to primitive.ObjectId err", err)
@@ -247,6 +248,9 @@ func (h *TrainHandler) SearchTrain(ctx context.Context, req *pb.SearchTrainReque
 	}
 
 	res, err := h.useCase.SearchTrain(ctx, searchData)
+	if err != nil {
+		return nil, err
+	}
 
 	response := &pb.SearchTrainResponse{
 		Traindata: make([]*pb.TrainData, len(res.SearcheResponse)), // Initialize the slice
