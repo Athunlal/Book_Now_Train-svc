@@ -17,6 +17,39 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// FindCompartmentByid implements interfaces.TrainRepo.
+func (db *TrainDataBase) FindCompartmentByid(ctx context.Context, compartmentId primitive.ObjectID) error {
+	collectionSeat := db.DB.Collection("seat")
+	filter := bson.M{"_id": compartmentId}
+	result := collectionSeat.FindOne(ctx, filter)
+	if err := result.Err(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SearchTrainby_name implements interfaces.TrainRepo.
+func (db *TrainDataBase) SearchTrainbyName(ctx context.Context, trainName string) (domain.Train, error) {
+	collectionTrain := db.DB.Collection("train")
+
+	filter := bson.M{"trainName": trainName}
+
+	result := collectionTrain.FindOne(ctx, filter)
+
+	if err := result.Err(); err != nil {
+		return domain.Train{}, err
+	}
+
+	var train domain.Train
+	if err := result.Decode(&train); err != nil {
+		log.Printf("Error decoding document: %v\n", err)
+		return domain.Train{}, err
+	}
+
+	return train, nil
+}
+
 // ViewStation implements interfaces.TrainRepo.
 func (db *TrainDataBase) ViewStation(ctx context.Context) (*domain.SearchStationRes, error) {
 	var Station domain.SearchStationRes
@@ -39,13 +72,12 @@ func (db *TrainDataBase) ViewStation(ctx context.Context) (*domain.SearchStation
 
 // UpdateSeatIntoTrain implements interfaces.TrainRepo.
 func (db *TrainDataBase) UpdateSeatIntoTrain(ctx context.Context, updateData domain.Train) error {
-	fmt.Println(updateData.Compartment)
 	collection := db.DB.Collection("train")
 	filter := bson.M{"trainNumber": updateData.TrainNumber}
 	update := bson.M{"$set": bson.M{"compartment": updateData.Compartment}}
 	_, err := collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		fmt.Printf("Error updating train: %v\n", err)
+		return err
 	}
 	return err
 }

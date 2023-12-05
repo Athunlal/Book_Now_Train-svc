@@ -3,16 +3,24 @@ package usecase
 import (
 	"context"
 	"errors"
+	"sync"
 
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowTrain-svc/pkg/repository/interface"
 	usecase "github.com/athunlal/bookNowTrain-svc/pkg/usecase/interface"
 	"github.com/athunlal/bookNowTrain-svc/pkg/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type TrainUseCase struct {
 	Repo interfaces.TrainRepo
+	wg   sync.WaitGroup
+}
+
+// SearchTrainByName implements interfaces.TrainUseCase.
+func (use *TrainUseCase) SearchTrainByName(ctx context.Context, trainName string) (domain.Train, error) {
+	return use.Repo.SearchTrainbyName(ctx, trainName)
 }
 
 // ViewStation implements interfaces.TrainUseCase.
@@ -23,17 +31,58 @@ func (use *TrainUseCase) ViewStation(ctx context.Context) (*domain.SearchStation
 
 // UpadateSeatInotTrain implements interfaces.TrainUseCase.
 func (use *TrainUseCase) UpadateSeatInotTrain(ctx context.Context, updateData domain.Train) error {
-	_, err := use.Repo.FindByTrainNumber(ctx, updateData)
-	if err != nil {
-		return errors.New("Train number not exist")
+	if err := use.validateTrainNumberExistence(ctx, updateData); err != nil {
+		return err
 	}
-	err = use.Repo.UpdateSeatIntoTrain(ctx, updateData)
-	return err
+
+	if err := use.updateSeatsInTrain(ctx, updateData); err != nil {
+		return err
+	}
+
+	if err := use.Repo.UpdateSeatIntoTrain(ctx, updateData); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (use *TrainUseCase) validateTrainNumberExistence(ctx context.Context, updateData domain.Train) error {
+	if _, err := use.Repo.FindByTrainNumber(ctx, updateData); err != nil {
+		return errors.New("Train number does not exist")
+	}
+	return nil
+}
+
+func (use *TrainUseCase) updateSeatsInTrain(ctx context.Context, updateData domain.Train) error {
+	errCh := make(chan error)
+	var wg sync.WaitGroup
+
+	for _, val := range updateData.Compartment {
+		wg.Add(1)
+		go func(seatid primitive.ObjectID) {
+			defer wg.Done()
+			errCh <- use.Repo.FindCompartmentByid(ctx, seatid)
+		}(val.Seatid)
+	}
+
+	go func() {
+		wg.Wait()
+		close(errCh)
+	}()
+
+	for err := range errCh {
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // AddSeat implements interfaces.TrainUseCase.
 func (use *TrainUseCase) AddSeat(ctx context.Context, seat domain.SeatData) (error, *mongo.InsertOneResult) {
 	allocatedSeate := utils.SeateAllocation(seat)
+
 	err, response := use.Repo.FindSeatbyCompartment(ctx, allocatedSeate)
 	var res *mongo.InsertOneResult
 	if err != nil {
