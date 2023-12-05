@@ -24,6 +24,23 @@ func NewTrainHandler(usecase interfaces.TrainUseCase) *TrainHandler {
 	}
 }
 
+func (h *TrainHandler) ViewRoute(ctx context.Context, req *pb.ViewRoutesRequest) (*pb.ViewRoutesResponse, error) {
+	res, err := h.useCase.ViewRoute(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var result []domain.Route
+	if err != nil {
+		return nil, err
+	}
+
+	for _, val := range res {
+		result = append(result, val)
+	}
+
+	return &pb.ViewRoutesResponse{}, nil
+}
+
 //View all station
 func (h *TrainHandler) ViewStation(ctx context.Context, req *pb.ViewRequest) (*pb.ViewStationResponse, error) {
 	res, err := h.useCase.ViewStation(ctx)

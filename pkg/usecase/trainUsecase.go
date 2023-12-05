@@ -18,6 +18,15 @@ type TrainUseCase struct {
 	wg   sync.WaitGroup
 }
 
+// ViewRoute implements interfaces.TrainUseCase.
+func (use *TrainUseCase) ViewRoute(ctx context.Context) ([]domain.Route, error) {
+	res, err := use.Repo.ViewRoute(ctx)
+	if err != nil {
+		return []domain.Route{}, err
+	}
+	return *res, nil
+}
+
 // SearchTrainByName implements interfaces.TrainUseCase.
 func (use *TrainUseCase) SearchTrainByName(ctx context.Context, trainName string) (domain.Train, error) {
 	return use.Repo.SearchTrainbyName(ctx, trainName)

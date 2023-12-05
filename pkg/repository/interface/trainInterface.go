@@ -30,4 +30,5 @@ type TrainRepo interface {
 	UpdateSeatIntoTrain(ctx context.Context, updateData domain.Train) error
 
 	FindCompartmentByid(ctx context.Context, compartmentId primitive.ObjectID) error
+	ViewRoute(ctx context.Context) (*[]domain.Route, error)
 }

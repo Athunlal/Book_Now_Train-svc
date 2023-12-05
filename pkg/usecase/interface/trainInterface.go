@@ -20,4 +20,5 @@ type TrainUseCase interface {
 	ViewStation(ctx context.Context) (*domain.SearchStationRes, error)
 
 	SearchTrainByName(ctc context.Context, trainName string) (domain.Train, error)
+	ViewRoute(ctx context.Context) ([]domain.Route, error)
 }
