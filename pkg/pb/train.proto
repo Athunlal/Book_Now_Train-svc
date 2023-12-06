@@ -18,6 +18,28 @@ service TrainManagement {
     rpc ViewStation(ViewRequest)returns(ViewStationResponse){}  
 
     rpc SearchTrainByName(SearchTrainByNameRequest)returns(SearchTrainByNameResponse){}
+    rpc ViewRoute(ViewRoutesRequest)returns(ViewRoutesResponse){}
+    rpc ViewCompartment(ViewCompartmentRequest)returns(ViewCompartmentResponse){}
+}
+
+message ViewCompartmentRequest{}
+message ViewCompartmentResponse{
+   repeated compartmentDetails compartment = 1;
+}
+
+message compartmentDetails {
+    string compartmentId = 1; 
+    string compartmentType = 2;
+    int64 price = 3;
+}
+
+message ViewRoutesRequest{}
+message ViewRoutesResponse{
+    repeated routeDetails RouteDetails= 1;
+}
+message routeDetails{
+    string routeName = 1;
+    string routeId = 2; 
 }
 
 //search train by name 
