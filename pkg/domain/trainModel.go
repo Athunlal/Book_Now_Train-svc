@@ -67,3 +67,16 @@ type SeatData struct {
 type SearchStationRes struct {
 	Station []Station
 }
+type CompartmentDetails struct {
+	CompartmentId   primitive.ObjectID `json:"compartmentId" bson:"_id"`
+	CompartmentType string             `json:"compartmentType" bson:"compartment"`
+	Price           int                `json:"price" bson:"price"`
+	SeatDetails     []SeatDetail
+}
+type SeatDetail struct {
+	SeatNumbers    int
+	SeatType       string
+	SeatPosition   string
+	IsReserved     bool
+	HasPowerOutlet bool
+}

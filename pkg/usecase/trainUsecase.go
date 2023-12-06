@@ -18,6 +18,11 @@ type TrainUseCase struct {
 	wg   sync.WaitGroup
 }
 
+// ViewCompartment implements interfaces.BookingUseCase.
+func (use *TrainUseCase) ViewCompartment(ctx context.Context) ([]domain.CompartmentDetails, error) {
+	return use.Repo.ViewCompartment(ctx)
+}
+
 // ViewRoute implements interfaces.TrainUseCase.
 func (use *TrainUseCase) ViewRoute(ctx context.Context) ([]domain.Route, error) {
 	res, err := use.Repo.ViewRoute(ctx)

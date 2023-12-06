@@ -24,21 +24,48 @@ func NewTrainHandler(usecase interfaces.TrainUseCase) *TrainHandler {
 	}
 }
 
+func (h *TrainHandler) ViewCompartment(ctx context.Context, req *pb.ViewCompartmentRequest) (*pb.ViewCompartmentResponse, error) {
+	res, err := h.useCase.ViewCompartment(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return mapViewCompartmentToPbResponse(res), nil
+}
+
+func mapViewCompartmentToPbResponse(res []domain.CompartmentDetails) *pb.ViewCompartmentResponse {
+	var Compartments []*pb.CompartmentDetails
+	for _, val := range res {
+		compartment := pb.CompartmentDetails{
+			CompartmentId:   val.CompartmentId.Hex(),
+			CompartmentType: val.CompartmentType,
+			Price:           int64(val.Price),
+		}
+		Compartments = append(Compartments, &compartment)
+	}
+	return &pb.ViewCompartmentResponse{
+		Compartment: Compartments,
+	}
+}
+
 func (h *TrainHandler) ViewRoute(ctx context.Context, req *pb.ViewRoutesRequest) (*pb.ViewRoutesResponse, error) {
 	res, err := h.useCase.ViewRoute(ctx)
 	if err != nil {
 		return nil, err
 	}
-	var result []domain.Route
-	if err != nil {
-		return nil, err
-	}
+
+	var response []*pb.RouteDetails
 
 	for _, val := range res {
-		result = append(result, val)
+		routeDetail := &pb.RouteDetails{
+			RouteName: val.RouteName,
+			RouteId:   val.RouteId.Hex(),
+		}
+		response = append(response, routeDetail)
 	}
 
-	return &pb.ViewRoutesResponse{}, nil
+	return &pb.ViewRoutesResponse{
+		RouteDetails: response,
+	}, nil
 }
 
 //View all station

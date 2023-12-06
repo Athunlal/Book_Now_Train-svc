@@ -31,4 +31,6 @@ type TrainRepo interface {
 
 	FindCompartmentByid(ctx context.Context, compartmentId primitive.ObjectID) error
 	ViewRoute(ctx context.Context) (*[]domain.Route, error)
+
+	ViewCompartment(ctx context.Context) ([]domain.CompartmentDetails, error)
 }

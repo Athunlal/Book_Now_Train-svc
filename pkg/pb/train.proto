@@ -19,6 +19,18 @@ service TrainManagement {
 
     rpc SearchTrainByName(SearchTrainByNameRequest)returns(SearchTrainByNameResponse){}
     rpc ViewRoute(ViewRoutesRequest)returns(ViewRoutesResponse){}
+    rpc ViewCompartment(ViewCompartmentRequest)returns(ViewCompartmentResponse){}
+}
+
+message ViewCompartmentRequest{}
+message ViewCompartmentResponse{
+   repeated compartmentDetails compartment = 1;
+}
+
+message compartmentDetails {
+    string compartmentId = 1; 
+    string compartmentType = 2;
+    int64 price = 3;
 }
 
 message ViewRoutesRequest{}
