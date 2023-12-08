@@ -14,7 +14,12 @@ type Train struct {
 	EndingtingTime string             `json:"endingtingtime,omitempty" bson:"endingtingtime,omitempty"`
 	Seatsid        primitive.ObjectID `json:"seatid,omitempty" bson:"_id,omitempty"`
 	Compartment    []Compartment      `json:"compartment,omitempty" bson:"compartment,omitempty"`
+	Date           []Date             `json:"date"`
 }
+type Date struct {
+	Day string `json:"day" bson:"day,omitempty"`
+}
+
 type Compartment struct {
 	Seatid primitive.ObjectID `json:"seatid,omitempty" bson:"_id,omitempty"`
 }
