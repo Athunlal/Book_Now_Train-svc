@@ -131,12 +131,14 @@ func (h *TrainHandler) AddSeat(ctx context.Context, req *pb.AddSeatRequest) (*pb
 func (h *TrainHandler) ViewTrain(ctx context.Context, req *pb.ViewTrainRequest) (*pb.ViewTrainResponse, error) {
 	res, err := h.useCase.ViewTrain(ctx)
 	if err != nil {
-		return &pb.ViewTrainResponse{
-			Status: http.StatusUnprocessableEntity,
-			Error:  "Error Found in usecase",
-		}, err
+		return nil, err
 	}
+	response := createResponseViewTrain(res)
 
+	return response, nil
+}
+
+func createResponseViewTrain(res *domain.SearchingTrainResponseData) *pb.ViewTrainResponse {
 	response := &pb.ViewTrainResponse{
 		Traindata: make([]*pb.Train, len(res.SearcheResponse)),
 		Status:    http.StatusOK,
@@ -147,7 +149,7 @@ func (h *TrainHandler) ViewTrain(ctx context.Context, req *pb.ViewTrainRequest) 
 			Trainnumber: int64(rs.TrainNumber),
 		}
 	}
-	return response, nil
+	return response
 }
 
 func (h *TrainHandler) UpdateTrainRoute(ctx context.Context, req *pb.UpdateRequest) (*pb.UpdateResponse, error) {
