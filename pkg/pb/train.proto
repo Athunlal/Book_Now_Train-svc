@@ -125,6 +125,10 @@ message AddTrainRequest {
     string startingtime = 3;
     string endingtime = 4;
     string traintype=5;
+    repeated date Date = 6;
+}
+message date{
+    string day = 1; 
 }
 
 message AddTrainResponse {

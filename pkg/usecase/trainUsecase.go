@@ -20,7 +20,16 @@ type TrainUseCase struct {
 
 // ViewCompartment implements interfaces.BookingUseCase.
 func (use *TrainUseCase) ViewCompartment(ctx context.Context) ([]domain.CompartmentDetails, error) {
-	return use.Repo.ViewCompartment(ctx)
+	res, err := use.Repo.ViewCompartment(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(res) < 1 {
+		return nil, errors.New("Compartment Not Found")
+	}
+
+	return res, nil
 }
 
 // ViewRoute implements interfaces.TrainUseCase.
@@ -29,6 +38,11 @@ func (use *TrainUseCase) ViewRoute(ctx context.Context) ([]domain.Route, error) 
 	if err != nil {
 		return []domain.Route{}, err
 	}
+
+	if len(*res) < 1 {
+		return nil, errors.New("Routes not found")
+	}
+
 	return *res, nil
 }
 
@@ -40,6 +54,9 @@ func (use *TrainUseCase) SearchTrainByName(ctx context.Context, trainName string
 // ViewStation implements interfaces.TrainUseCase.
 func (use *TrainUseCase) ViewStation(ctx context.Context) (*domain.SearchStationRes, error) {
 	res, err := use.Repo.ViewStation(ctx)
+	if len(res.Station) < 1 {
+		return nil, errors.New("Station not found")
+	}
 	return res, err
 }
 
@@ -112,12 +129,18 @@ func (use *TrainUseCase) AddSeat(ctx context.Context, seat domain.SeatData) (err
 // ViewTrain implements interfaces.TrainUseCase.
 func (use *TrainUseCase) ViewTrain(ctx context.Context) (*domain.SearchingTrainResponseData, error) {
 	res, err := use.Repo.ViewTrain(ctx)
+	if len(res.SearcheResponse) < 1 {
+		return nil, errors.New("Train Not found")
+	}
 	return res, err
 }
 
 // SearchTrain implements interfaces.TrainUseCase.
 func (use *TrainUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
 	res, err := use.Repo.SearchTrain(ctx, searcheData)
+	// if len(res.SearcheResponse) < 1 {
+	// 	return domain.SearchingTrainResponseData{}, errors.New("Train Not Found")
+	// }
 	return res, err
 }
 

@@ -36,12 +36,17 @@ func MapToSearchTrainResponse(res domain.SearchingTrainResponseData) *pb.SearchT
 }
 
 func MapToAddTrain(req *pb.AddTrainRequest) domain.Train {
+	date := make([]domain.Date, len(req.Date))
+	for i, val := range req.Date {
+		date[i].Day = val.Day
+	}
 	return domain.Train{
 		TrainName:      req.Trainname,
 		TrainNumber:    uint(req.Trainnumber),
 		TrainType:      req.Traintype,
 		StartingTime:   req.Startingtime,
 		EndingtingTime: req.Endingtime,
+		Date:           date,
 	}
 }
 
