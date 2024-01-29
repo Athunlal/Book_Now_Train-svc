@@ -85,6 +85,7 @@ func (use *TrainUseCase) validateTrainNumberExistence(ctx context.Context, updat
 }
 
 func (use *TrainUseCase) updateSeatsInTrain(ctx context.Context, updateData domain.Train) error {
+
 	errCh := make(chan error)
 	var wg sync.WaitGroup
 
@@ -137,11 +138,7 @@ func (use *TrainUseCase) ViewTrain(ctx context.Context) (*domain.SearchingTrainR
 
 // SearchTrain implements interfaces.TrainUseCase.
 func (use *TrainUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
-	res, err := use.Repo.SearchTrain(ctx, searcheData)
-	// if len(res.SearcheResponse) < 1 {
-	// 	return domain.SearchingTrainResponseData{}, errors.New("Train Not Found")
-	// }
-	return res, err
+	return use.Repo.SearchTrain(ctx, searcheData)
 }
 
 // UpdateTrainRoute implements interfaces.TrainUseCase.
